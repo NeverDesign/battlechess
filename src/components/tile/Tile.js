@@ -21,7 +21,6 @@ class Tile extends React.Component {
 	 * @purpose toggles whether this tile is active or not
 	 */
 	toggleActiveState = () => {
-		console.log('Active State Updated');
 		this.setState({ active: !this.state.active });
 	};
 
@@ -33,7 +32,7 @@ class Tile extends React.Component {
 	 */
 	renderWeb = ( classColour, classActive, style ) => {
 		return (
-			<div ref={this.label} className={'tile ' + classColour + classActive } style={style.tileSize} onClick={this.toggleActiveState} >
+			<div ref={this.ref} className={'tile ' + classColour + classActive } style={style.tileSize} onClick={this.toggleActiveState} >
 				<div className="inner">
 					<span>{this.props.label}</span>
 					{this.props.children}
@@ -60,7 +59,7 @@ class Tile extends React.Component {
 			}
 		};
 
-		return this.renderWeb( classColour, classActive, style);
+		return this.renderWeb( classColour, classActive, style );
 	}
 }
 

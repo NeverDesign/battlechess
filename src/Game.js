@@ -83,6 +83,7 @@ class Game extends React.Component {
 	 */
 	renderWeb = () => {
 		let tiles = this.generateTiles();
+		let tileItems = tiles.props.children;
 
 		return (
 			<div className={'game'}>
