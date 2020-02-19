@@ -1,0 +1,16 @@
+.container-board {
+	width: 500px;
+	padding: 10px;
+	background: #efefef;
+}
+
+.container-graveyard {
+
+}
+
+.board {
+	display: flex;
+		flex-wrap: wrap;
+	width: 100%;
+	background: #6BBF5E;
+}

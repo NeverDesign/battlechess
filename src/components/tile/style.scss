@@ -1,0 +1,36 @@
+// Imports
+@import '../../theme/colours';
+
+.tile {
+	position: relative;
+	transition-duration: 0.2s;
+
+	&:hover {
+		box-shadow: inset 0 0 10px $white;
+		
+	}
+
+	.inner {
+		border: 2px solid transparent;
+		position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+	}
+
+	&.active {
+		.inner {
+			border: 2px solid #0fc;
+		}
+	}
+
+	&.light {
+		
+	}
+
+	&.dark {
+		background: transparentize($black, 0.9);
+	}
+}
+

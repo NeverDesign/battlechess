@@ -1,0 +1,19 @@
+//======================================================================//
+//===================== <<<<< Colour Helpers >>>>> =====================//
+//======================================================================//
+
+// Neutrals
+.text-black				{ color: $black; }
+.text-grey-darkest		{ color: $grey-darkest; }
+.text-grey-dark			{ color: $grey-dark; }
+.text-grey-medium		{ color: $grey-medium; }
+.text-grey-light		{ color: $grey-light; }
+.text-grey-lightest		{ color: $grey-lightest; }
+.text-white-off			{ color: $white-off; }
+.text-white				{ color: $white; }
+
+// Warnings
+.text-success			{ color: $success; }
+.text-info				{ color: $info:; }
+.text-warning			{ color: $warning; }
+.text-danger			{ color: $danger; }
