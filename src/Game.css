@@ -9,8 +9,31 @@
 }
 
 .board {
+	background: #6BBF5E;
+	position: relative;
+}
+
+.container {
 	display: flex;
 		flex-wrap: wrap;
 	width: 100%;
-	background: #6BBF5E;
+	position: relative;
 }
+
+.player-1 .container {
+	flex-wrap: wrap-reverse;
+}
+
+.player-2 .container {
+	flex-wrap: wrap;
+}
+
+.container-pieces {
+	position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+}
+
+

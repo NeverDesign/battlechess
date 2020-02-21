@@ -32,7 +32,7 @@ class Tile extends React.Component {
 	 */
 	renderWeb = ( classColour, classActive, style ) => {
 		return (
-			<div ref={this.ref} className={'tile ' + classColour + classActive } style={style.tileSize} onClick={this.toggleActiveState} >
+			<div id={this.props.label} ref={this.ref} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.toggleActiveState} >
 				<div className="inner">
 					<span>{this.props.label}</span>
 					{this.props.children}

@@ -1,0 +1,13 @@
+// Imports
+@import '../../theme/colours';
+
+.piece {
+	display: flex;
+		align-items: center;
+		justify-content: center;
+	position: absolute;
+	border: 1px solid transparent;
+
+	transition-duration: 0.2s;
+}
+

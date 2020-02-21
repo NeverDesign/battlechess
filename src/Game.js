@@ -1,8 +1,11 @@
 // Imports
 import React from 'react';
 import './Game.css';
-
 import Tile from "./components/tile/Tile";
+
+// Data
+import GameData from "./data/data";
+import Piece from "./components/piece/Piece";
 
 /**
  * @class Game
@@ -12,9 +15,16 @@ class Game extends React.Component {
 		super(props);
 
 		this.state = {
-			tileSize: 0,
-			tiles: []
+			gridSize: 0,
+			tileData: [],
+			pieceData: [],
 		};
+
+		this.board = React.createRef();
+		this.tileContainer = React.createRef();
+		this.tiles = React.createRef();
+		this.pieceContainer = React.createRef();
+		this.pieces = React.createRef();
 	}
 
 	/**
@@ -25,48 +35,68 @@ class Game extends React.Component {
 	 */
 	generateTiles = () => {
 		let tiles = [];
-		let isDark = true;
-		let rowCount = 8;
-		let colNames = ['a','b','c','d','e','f','g','h'];
 
 		// 1. Generate the tiles for the board
-		tiles = Array(64).fill(0).map( ( current, index ) => {
-			// Alternate the dark tile flag between light and dark
-			if( index % 2 >= 0 ){
-				isDark = !isDark;
-			}
-
-			// For new rows
-			if ( index !== 0 && index % 8 === 0 ) {
-				// Reverse the isDark flag so that starting tiles alternate
-				isDark = !isDark;
-
-				// Increment the row count
-				rowCount--;
-			}
-
-			// Generate the tile name used for referencing each tile in the grid
-			let tileName = colNames[index % 8] + rowCount;
-			let tile = <Tile key={''+index} ref={tileName} label={tileName} isDark={ isDark } size={this.state.tileSize} />;
-
-			// Render the result
-			return tile;
+	 	tiles = this.state.tileData.map( (tile, index) => {
+			let refName = tile.col + tile.row;
+			let tileComponent = <Tile key={''+index} ref={refName} label={tile.col + tile.row}
+						 size={this.state.gridSize} isDark={tile.isDark}
+						 occupied={tile.occupied} occupant={tile.occupant}
+			/>;
+			return tileComponent;
 		});
 
-		// 2. Return the result
-		return (<>{tiles}</>);
+	 	// 2. Update the board Tiles refs to include a handle to each tile
+		this.tiles = tiles;
+
+		// 3. Return the result
+		return (<div className="container container-tiles" ref={ this.tileContainer }>{tiles}</div>);
+	};
+
+	generatePieces = () => {
+		let pieces = [];
+
+		pieces = this.state.pieceData.map( (piece, index) => {
+			return <Piece ref={'lp1'} key={''+index} team={piece.team} col={piece.col} row={piece.row} size={this.state.gridSize} />
+		});
+
+		// 2. Update the board Tiles refs to include a handle to each tile
+		this.pieces = pieces;
+
+		return (<div className="container container-pieces" ref={ this.pieceContainer }>{pieces}</div>);
 	};
 
 	/**
-	 * @function setTileSize
+	 * @function setGridSize
 	 * @purpose Determine the size each tile needs to be when the game component mounts
 	 */
-	setTileSize = () => {
+	setGridSize = () => {
 		let size = 0;
 		let boardWidth = document.getElementsByClassName('board')[0].offsetWidth;
 		size = boardWidth / 8;
 
-		this.setState({ tileSize: size });
+		this.setState({ gridSize: size });
+	};
+
+	movePiece = () => {
+		console.log('movePiece: ', this.tileContainer.current.children.f5 );
+
+		// Find a tile class by ref
+		// let destinationTile = this.tiles.find( ( tile ) => {
+		// 	return tile.ref === 'd8';
+		// });
+
+		// Find a tile div by ref
+		let destinationTile = this.tileContainer.current.children.f5;
+
+		let piece = this.pieces.find( (piece)=>{
+			return piece.ref === 'lp1';
+		} );
+		console.log('piece: ', piece);
+		// piece.movePiece( destinationTile.offsetTop, destinationTile.offsetLeft );
+
+		console.log('movePiece: Dest: ', destinationTile.offsetLeft, destinationTile.offsetTop );
+		// console.log('movePiece: Dest: ', destinationTile, );
 	};
 
 	/**
@@ -74,16 +104,20 @@ class Game extends React.Component {
 	 * @purpose run when the component is mounted and ready for use
 	 */
 	componentDidMount() {
-		this.setTileSize();
+		// Set the grid size
+		this.setGridSize();
+
+		// Retrieve the Data
+		this.setState({'tileData': GameData.tiles, 'pieceData': GameData.pieces });
 	}
 
 	/**
-	 * @function rederWeb
+	 * @function renderWeb
 	 * @purpose render the game board for web
 	 */
 	renderWeb = () => {
-		let tiles = this.generateTiles();
-		let tileItems = tiles.props.children;
+		let tilesContainer = this.generateTiles();
+		let piecesContainer = this.generatePieces();
 
 		return (
 			<div className={'game'}>
@@ -95,11 +129,12 @@ class Game extends React.Component {
 					<div className={'container-board'}>
 						{/*<div className="container-graveyard container-graveyard-opponent"></div>*/}
 
-						<div className={'board'}>
-							{tiles}
+						<div className={'board player-1'} ref={this.board}>
+							{tilesContainer}
+							{piecesContainer}
 						</div>
 
-						{/*<a onClick={tiles[0].toggleActiveState}>ToggleActive</a>*/}
+						<a onClick={this.movePiece}>Test</a>
 
 						{/*<div className="container-graveyard container-graveyard-player"></div>*/}
 					</div>
