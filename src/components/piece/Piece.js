@@ -1,7 +1,6 @@
 // Imports
 import React from 'react'
 import './style.css';
-import GameData from "../../data/data";
 
 class Piece extends React.Component {
 	constructor(props){
@@ -23,11 +22,7 @@ class Piece extends React.Component {
 	 */
 	componentDidMount() {
 		const { col, row, x, y } = this.props;
-		this.setState({'col': col, 'row': row });
-	};
-
-	movePiece = ( x, y ) => {
-		this.setState({ 'x': x, 'y': y });
+		this.setState({'col': col, 'row': row, 'x': x, 'y': y });
 	};
 
 	/**
@@ -46,7 +41,7 @@ class Piece extends React.Component {
 		};
 
 		return (
-			<div id={this.ref} ref={this.ref} className={'piece ' + classColour + classActive} style={style} >
+			<div id={this.props.label} ref={this.ref} className={'piece ' + classColour + classActive} style={style} >
 				<div className="inner">
 					<span>&#9817;</span>
 				</div>

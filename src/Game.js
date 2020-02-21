@@ -2,10 +2,10 @@
 import React from 'react';
 import './Game.css';
 import Tile from "./components/tile/Tile";
+import Piece from "./components/piece/Piece";
 
 // Data
 import GameData from "./data/data";
-import Piece from "./components/piece/Piece";
 
 /**
  * @class Game
@@ -39,11 +39,10 @@ class Game extends React.Component {
 		// 1. Generate the tiles for the board
 	 	tiles = this.state.tileData.map( (tile, index) => {
 			let refName = tile.col + tile.row;
-			let tileComponent = <Tile key={''+index} ref={refName} label={tile.col + tile.row}
+			return <Tile key={refName} ref={refName} label={tile.col + tile.row}
 						 size={this.state.gridSize} isDark={tile.isDark}
 						 occupied={tile.occupied} occupant={tile.occupant}
 			/>;
-			return tileComponent;
 		});
 
 	 	// 2. Update the board Tiles refs to include a handle to each tile
@@ -56,8 +55,13 @@ class Game extends React.Component {
 	generatePieces = () => {
 		let pieces = [];
 
-		pieces = this.state.pieceData.map( (piece, index) => {
-			return <Piece ref={'lp1'} key={''+index} team={piece.team} col={piece.col} row={piece.row} size={this.state.gridSize} />
+		pieces = this.state.pieceData.map( (piece) => {
+			let key = piece.team + piece.type + piece.id + '-' + piece.row + piece.col;
+			let refName = piece.team + piece.type + piece.id;
+			return <Piece key={key} ref={refName} label={refName}
+						  team={piece.team} col={piece.col} row={piece.row}
+						  x={piece.x} y={piece.y} size={this.state.gridSize}
+			/>;
 		});
 
 		// 2. Update the board Tiles refs to include a handle to each tile
@@ -72,28 +76,63 @@ class Game extends React.Component {
 	 */
 	setGridSize = () => {
 		let size = 0;
+		// TODO: Change this to use the board ref
 		let boardWidth = document.getElementsByClassName('board')[0].offsetWidth;
 		size = boardWidth / 8;
 
 		this.setState({ gridSize: size });
 	};
 
-	movePiece = () => {
-		console.log('movePiece: ', this.tileContainer.current.children.f5 );
+	// TODO: Update this so that the piece name and destination tile name can be passed in
+	// TODO: Try understand what the hell this is actually doing now that it works
+	movePiece = ( tileRef ) => {
+		// console.log('movePiece: ', this.tileContainer.current.children.f5 );
+		// console.log('movePiece: ', this.pieceContainer.current.children );
+
+		// Extract the row and column data from the passed in tile reference
+		let row = tileRef[0];
+		let col = tileRef[1];
 
 		// Find a tile class by ref
-		// let destinationTile = this.tiles.find( ( tile ) => {
-		// 	return tile.ref === 'd8';
-		// });
+		let destinationTileData = this.state.tileData.find(( tile ) => {
+			return tile.row === 'a' && tile.col === 1;
+		});
+		console.log('Destination Tile Data: ', destinationTileData);
 
 		// Find a tile div by ref
-		let destinationTile = this.tileContainer.current.children.f5;
+		let destinationTile = this.tileContainer.current.children.e2;
+		console.log('Destination Tile: ', destinationTile);
 
-		let piece = this.pieces.find( (piece)=>{
-			return piece.ref === 'lp1';
-		} );
+		let piece = this.pieces.find((piece) => {
+			return piece.ref === 'lpawn1';
+		});
+
+		// Update the data
+		let pieceDataArray = this.state.pieceData;
+		console.log('Data: 1. ', this.state.pieceData);
+		let pieceData = this.state.pieceData.find((piece, index) => {
+			if( piece.id === 2 ){
+				// Update the Piece object
+				let updatedPiece = piece;
+				updatedPiece.x = destinationTile.offsetTop;
+				updatedPiece.y = destinationTile.offsetLeft;
+				updatedPiece.row = 'f';
+				updatedPiece.col = 9;
+
+				// Update the piece in the data array
+				pieceDataArray[index] = updatedPiece;
+
+				// Update the Data in the state
+				this.setState({'pieceData': pieceDataArray});
+				console.log('Data: 2.', pieceDataArray);
+			}
+
+			return piece.id === 2;
+		});
+
 		console.log('piece: ', piece);
-		// piece.movePiece( destinationTile.offsetTop, destinationTile.offsetLeft );
+		// piece.movePiece( destinationTile.offsetTop, destinationTile.offsetLeft);
+
 
 		console.log('movePiece: Dest: ', destinationTile.offsetLeft, destinationTile.offsetTop );
 		// console.log('movePiece: Dest: ', destinationTile, );
@@ -141,7 +180,7 @@ class Game extends React.Component {
 				</main>
 			</div>
 		);
-	}
+	};
 
 	/**
 	 * @function Render
