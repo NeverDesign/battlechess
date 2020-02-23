@@ -105,8 +105,7 @@ class Game extends React.Component {
 	 */
 	setGridSize = () => {
 		let size = 0;
-		// TODO: Change this to use the board ref
-		let boardWidth = document.getElementsByClassName('board')[0].offsetWidth;
+		let boardWidth = this.board.current.offsetWidth;
 		size = boardWidth / 8;
 
 		this.setState({ gridSize: size });
