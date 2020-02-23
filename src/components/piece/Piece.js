@@ -3,14 +3,14 @@ import React from 'react'
 import './style.css';
 
 class Piece extends React.Component {
-	constructor(props){
+	constructor(props, data){
 		super(props);
 
 		this.state = {
-			'col': 'c',
-			'row': 6,
-			'x': 0,
-			'y': 0,
+			'col': this.props.col,
+			'row': this.props.row,
+			'x': data.x,
+			'y': data.y,
 		};
 
 		this.ref = React.createRef();
@@ -41,7 +41,7 @@ class Piece extends React.Component {
 		};
 
 		return (
-			<div id={this.props.label} ref={this.ref} className={'piece ' + classColour + classActive} style={style} >
+			<div id={this.props.label} key={this.props.key} ref={this.ref} className={'piece ' + classColour + classActive} style={style} >
 				<div className="inner">
 					<span>&#9817;</span>
 				</div>
@@ -59,14 +59,6 @@ class Piece extends React.Component {
 		const classColour = this.props.isDark ? 'dark ' : 'light ';
 		const classActive = this.state.active ? 'active ' : '';
 		const size = this.props.size;
-
-		// TODO: Clean remove this math once the movePiece is set up correctly
-		// const columns = ['a','b','c','d','e','f','g','h'];
-		// const rows = [1,2,3,4,5,6,7,8];
-
-		//
-		// const xVal = (columns.indexOf(this.state.col)) * this.props.size;
-		// const yVal = (rows.indexOf(this.state.row)) * this.props.size;
 
 		return this.renderWeb( classColour, classActive, size );
 	}

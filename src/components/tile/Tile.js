@@ -6,7 +6,7 @@ import './style.css';
  * @class Tile
  */
 class Tile extends React.Component {
-	constructor(props){
+	constructor(props, data){
 		super(props);
 
 		this.state = {
@@ -32,7 +32,7 @@ class Tile extends React.Component {
 	 */
 	renderWeb = ( classColour, classActive, style ) => {
 		return (
-			<div id={this.props.label} ref={this.ref} row={this.props.row} col={this.props.col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.toggleActiveState} >
+			<div id={this.props.label} key={this.props.key} ref={this.ref} row={this.props.row} col={this.props.col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.toggleActiveState} >
 				<div className="inner">
 					<span>{this.props.label}</span>
 					{this.props.children}

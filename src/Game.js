@@ -20,6 +20,7 @@ class Game extends React.Component {
 			pieceData: [],
 		};
 
+		// TODO: Clean this up once the generateTiles/generatePiece data functions have become less volatile
 		this.board = React.createRef();
 		this.tileContainer = React.createRef();
 		this.tiles = React.createRef();
@@ -36,38 +37,66 @@ class Game extends React.Component {
 	generateTiles = () => {
 		let tiles = [];
 
-		// 1. Generate the tiles for the board
-	 	tiles = this.state.tileData.map( (tile, index) => {
-			let refName = tile.col + tile.row;
-			return <Tile key={refName} ref={refName} label={tile.col + tile.row}
-						 size={this.state.gridSize} isDark={tile.isDark}
-						 occupied={tile.occupied} occupant={tile.occupant}
-			/>;
+		// 1. Generate an array of tile classes based on the retrieved tile data
+		tiles = this.state.tileData.map((tileData) => {
+			let refName = tileData.col + tileData.row;
+			let props = {
+				'key': refName,
+				'label': refName,
+				'ref': refName,
+				'isDark': tileData.isDark,
+				'size': this.state.gridSize
+			};
+			return new Tile( props, tileData );
 		});
 
 	 	// 2. Update the board Tiles refs to include a handle to each tile
 		this.tiles = tiles;
 
-		// 3. Return the result
-		return (<div className="container container-tiles" ref={ this.tileContainer }>{tiles}</div>);
+		// 3. Create an array of rendered tile nodes
+		let tileNodes = this.tiles.map((tile) => { return tile.render() });
+
+		// 4. Return the result
+		return (<div className="container container-tiles" ref={ this.tileContainer }>{tileNodes}</div>);
 	};
 
+	/**
+	 * @function generatePieces
+	 * @purpose generate the pieces required to play the game
+	 *
+	 * @returns {*}
+	 *
+	 * TODO: Update this to generate pieces for each player
+	 */
 	generatePieces = () => {
 		let pieces = [];
 
-		pieces = this.state.pieceData.map( (piece) => {
-			let key = piece.team + piece.type + piece.id + '-' + piece.row + piece.col;
-			let refName = piece.team + piece.type + piece.id;
-			return <Piece key={key} ref={refName} label={refName}
-						  team={piece.team} col={piece.col} row={piece.row}
-						  x={piece.x} y={piece.y} size={this.state.gridSize}
-			/>;
+		// 1. Generate an array of piece classes based on the retrieved piece data
+		pieces = this.state.pieceData.map( (pieceData) => {
+			let key = pieceData.team + pieceData.type + pieceData.id + '-' + pieceData.row + pieceData.col;
+			let refName = pieceData.team + pieceData.type + pieceData.id;
+			let props = {
+				'key': key,
+				'ref': refName,
+				'label': refName,
+				'team': pieceData.team,
+				'col': pieceData.col,
+				'row': pieceData.row,
+				'x': pieceData.x,
+				'y': pieceData.y,
+				'size': this.state.gridSize,
+			};
+
+			return new Piece( props, pieceData);
 		});
 
 		// 2. Update the board Tiles refs to include a handle to each tile
 		this.pieces = pieces;
 
-		return (<div className="container container-pieces" ref={ this.pieceContainer }>{pieces}</div>);
+		// 3. Create an array of rendered tile nodes
+		let pieceNodes = this.pieces.map((piece) => { return piece.render() });
+
+		return (<div className="container container-pieces" ref={ this.pieceContainer }>{pieceNodes}</div>);
 	};
 
 	/**
@@ -84,58 +113,47 @@ class Game extends React.Component {
 	};
 
 	// TODO: Update this so that the piece name and destination tile name can be passed in
-	// TODO: Try understand what the hell this is actually doing now that it works
-	movePiece = ( tileRef ) => {
-		// console.log('movePiece: ', this.tileContainer.current.children.f5 );
-		// console.log('movePiece: ', this.pieceContainer.current.children );
+	/**
+	 * @function MovePiece
+	 * @purpose move a piece by reference to a new tile by reference
+	 *
+	 * @param pieceRef
+	 * @param tileRef
+	 */
+	movePiece = ( pieceRef, tileRef ) => {
+		console.log('movePiece: ', pieceRef, tileRef );
+		// Initialize variables
+		let x, y, row, col;
 
-		// Extract the row and column data from the passed in tile reference
-		let row = tileRef[0];
-		let col = tileRef[1];
+		// Loop through the list of Tile classes to find the one that matches the tileRef and get it's HTML Node
+		let destinationTileNode = null;
+		for( let i = 0; i < this.tiles.length; i++ ){
+			// If the class key prop matches the tile ref get the HTML node from the tileContainer ref
+			if( this.tiles[i].props.key === tileRef ){
+				destinationTileNode = this.tileContainer.current.children[i];
 
-		// Find a tile class by ref
-		let destinationTileData = this.state.tileData.find(( tile ) => {
-			return tile.row === 'a' && tile.col === 1;
-		});
-		console.log('Destination Tile Data: ', destinationTileData);
-
-		// Find a tile div by ref
-		let destinationTile = this.tileContainer.current.children.e2;
-		console.log('Destination Tile: ', destinationTile);
-
-		let piece = this.pieces.find((piece) => {
-			return piece.ref === 'lpawn1';
-		});
-
-		// Update the data
-		let pieceDataArray = this.state.pieceData;
-		console.log('Data: 1. ', this.state.pieceData);
-		let pieceData = this.state.pieceData.find((piece, index) => {
-			if( piece.id === 2 ){
-				// Update the Piece object
-				let updatedPiece = piece;
-				updatedPiece.x = destinationTile.offsetTop;
-				updatedPiece.y = destinationTile.offsetLeft;
-				updatedPiece.row = 'f';
-				updatedPiece.col = 9;
-
-				// Update the piece in the data array
-				pieceDataArray[index] = updatedPiece;
-
-				// Update the Data in the state
-				this.setState({'pieceData': pieceDataArray});
-				console.log('Data: 2.', pieceDataArray);
+				// Get the position and row/col data
+				x = destinationTileNode.offsetLeft;
+				y = destinationTileNode.offsetTop;
+				col = this.tiles[i].props.ref[0];
+				row = parseInt(this.tiles[i].props.ref[1]);
 			}
+		}
 
-			return piece.id === 2;
+		// Loop through the piece data and find the piece to move by reference and update the x,y data and tile handle
+		let pieceData = this.state.pieceData;
+		this.state.pieceData.find(( data, index ) => {
+			let refName = data.team + data.type + data.id;
+			if( pieceRef === refName ){
+				data.x = x;
+				data.y = y;
+				data.row = row;
+				data.col = col;
+			}
+			pieceData[index] = data;
 		});
-
-		console.log('piece: ', piece);
-		// piece.movePiece( destinationTile.offsetTop, destinationTile.offsetLeft);
-
-
-		console.log('movePiece: Dest: ', destinationTile.offsetLeft, destinationTile.offsetTop );
-		// console.log('movePiece: Dest: ', destinationTile, );
+		this.setState({'pieceData': pieceData});
+		// pieceToMove.updatePosition( destinationTile.offsetLeft, destinationTile.offsetTop );
 	};
 
 	/**
@@ -173,7 +191,8 @@ class Game extends React.Component {
 							{piecesContainer}
 						</div>
 
-						<a onClick={this.movePiece}>Test</a>
+						<button onClick={() => this.movePiece('lpawn1','c6')}>Move Light Pawn</button>
+						<button onClick={() => this.movePiece('dpawn2','c7')}>Move Dark Pawn</button>
 
 						{/*<div className="container-graveyard container-graveyard-player"></div>*/}
 					</div>

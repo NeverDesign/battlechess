@@ -73,8 +73,8 @@ const Tiles = [
 ];
 
 const Pieces = [
-	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'tile': 'c5', 'col': 'c', 'row': 5, 'x': 0, 'y': 0 },
-	{ 'id': 2, 'type': 'pawn', 'team': 'd', 'tile': 'd6', 'col': 'd', 'row': 6, 'x': 0, 'y': 0 }
+	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'col': 'c', 'row': 5, 'x': 0, 'y': 0 },
+	{ 'id': 2, 'type': 'pawn', 'team': 'd', 'col': 'd', 'row': 6, 'x': 0, 'y': 0 }
 ];
 
 const GameData = {
