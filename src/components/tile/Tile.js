@@ -9,10 +9,16 @@ class Tile extends React.Component {
 	constructor(props, data){
 		super(props);
 
+		// Member Variables
+		this.isDark = data.isDark;
+		// this.handleClick = this.handleClick.bind(this);
+
+		// State Variables
 		this.state = {
-			active: false
+			active: false,
 		};
 
+		// Reference
 		this.ref = React.createRef();
 	}
 
@@ -24,6 +30,11 @@ class Tile extends React.Component {
 		this.setState({ active: !this.state.active });
 	};
 
+	// handleClick() {
+	// 	console.log('Tile: handleClick: ', this);
+	// 	return this;
+	// }
+
 	/**
 	 * @function renderWeb
 	 * @purpose render a tile for a web implementation
@@ -31,11 +42,13 @@ class Tile extends React.Component {
 	 * @return {*}
 	 */
 	renderWeb = ( classColour, classActive, style ) => {
+		const { label, key, col, row, children, onClick, ...rest } = this.props;
+
 		return (
-			<div id={this.props.label} key={this.props.key} ref={this.ref} row={this.props.row} col={this.props.col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.toggleActiveState} >
+			<div id={label} key={key} ref={this.ref} row={row} col={col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.handleClick} {...rest}>
 				<div className="inner">
-					<span>{this.props.label}</span>
-					{this.props.children}
+					<span>{label}</span>
+					{children}
 				</div>
 			</div>
 		);
@@ -48,7 +61,7 @@ class Tile extends React.Component {
 	 * TODO: Switch out the render method per platform
 	 */
 	render() {
-		const classColour = this.props.isDark ? 'dark ' : 'light ';
+		const classColour = this.isDark ? 'dark ' : 'light ';
 		const classActive = this.state.active ? 'active ' : '';
 
 		const size = this.props.size;

@@ -6,13 +6,19 @@ class Piece extends React.Component {
 	constructor(props, data){
 		super(props);
 
+		// Member Variables
+		this.isDark = data.isDark;
+		this.type = data.type;
+
+		// State Variables
 		this.state = {
-			'col': this.props.col,
-			'row': this.props.row,
-			'x': data.x,
-			'y': data.y,
+			x: props.x,
+			y: props.y,
+			row: props.row,
+			col: props.col,
 		};
 
+		// Reference
 		this.ref = React.createRef();
 	}
 
@@ -21,8 +27,16 @@ class Piece extends React.Component {
 	 * @purpose run when the component is mounted and ready for use
 	 */
 	componentDidMount() {
-		const { col, row, x, y } = this.props;
-		this.setState({'col': col, 'row': row, 'x': x, 'y': y });
+
+	};
+
+	updatePosition = ( x, y, row, col ) => {
+		this.setState({
+			col: col,
+			row: row,
+			x: x,
+			y: y
+		})
 	};
 
 	/**
@@ -31,7 +45,8 @@ class Piece extends React.Component {
 	 *
 	 * @return {*}
 	 */
-	renderWeb = ( classColour, classActive, size ) => {
+	renderWeb = ( classType, classColour, classActive, size ) => {
+		const { label, key, col, row, type, children, ...rest } = this.props;
 		const style = {
 			width: size,
 			height: size,
@@ -41,7 +56,7 @@ class Piece extends React.Component {
 		};
 
 		return (
-			<div id={this.props.label} key={this.props.key} ref={this.ref} className={'piece ' + classColour + classActive} style={style} >
+			<div id={label} key={key} ref={this.ref} className={'piece ' + classType + classColour + classActive} style={style} {...rest} >
 				<div className="inner">
 					<span>&#9817;</span>
 				</div>
@@ -56,11 +71,12 @@ class Piece extends React.Component {
 	 * TODO: Switch out the render method per platform
 	 */
 	render() {
-		const classColour = this.props.isDark ? 'dark ' : 'light ';
+		const classColour = this.isDark ? 'dark ' : 'light ';
 		const classActive = this.state.active ? 'active ' : '';
+		const classType = this.type + ' ';
 		const size = this.props.size;
 
-		return this.renderWeb( classColour, classActive, size );
+		return this.renderWeb( classType, classColour, classActive, size );
 	}
 }
 
