@@ -31,12 +31,14 @@ class Game extends React.Component {
 
 		// State Variables
 		this.state = {
+			alertGame: null,
 			boardSize: boardSize,
 			gridSize: gridSize,
 			tileData: GameData.tiles,
 			pieceData: GameData.pieces,
 			sourceTile: null,
-			destinationTile: null
+			sourcePiece: null,
+			destinationTile: null,
 		};
 	}
 
@@ -57,9 +59,15 @@ class Game extends React.Component {
 				'key': refName,
 				'label': refName,
 				'ref': refName,
-				'size': this.state.gridSize
+				'size': this.state.gridSize,
+				'handleclick': this.handleClick
 			};
-			return new Tile( props, tileData );
+			let state = {
+				'active': tileData.active,
+				'occupied': tileData.occupied,
+				'occupant': tileData.occupant
+			}
+			return new Tile( props, state, tileData );
 		});
 
 	 	// 2. Update the board Tiles refs to include a handle to each tile
@@ -80,25 +88,77 @@ class Game extends React.Component {
 
 		// 1. Generate an array of piece classes based on the retrieved piece data
 		pieces = this.state.pieceData.map( (pieceData) => {
-			let key = pieceData.team + pieceData.type + pieceData.id + '-' + pieceData.row + pieceData.col;
+			let key = pieceData.team + pieceData.type + pieceData.id;
 			let refName = pieceData.team + pieceData.type + pieceData.id;
 			let props = {
 				'key': key,
 				'ref': refName,
 				'label': refName,
 				'team': pieceData.team,
+				'size': this.state.gridSize,
+			};
+			let state = {
 				'col': pieceData.col,
 				'row': pieceData.row,
 				'x': pieceData.x,
 				'y': pieceData.y,
-				'size': this.state.gridSize,
-			};
+			}
 
-			return new Piece( props, pieceData);
+			// 2. Update the tile data occupied and occupant information
+			this.updateTileOccupants( refName, pieceData.col + pieceData.row );
+
+			return new Piece( props, state, pieceData);
 		});
 
-		// 2. Update the board Tiles refs to include a handle to each tile
+		// 3. Update the board Tiles refs to include a handle to each tile
 		return pieces;
+	};
+
+	/**
+	 * @function updateTileOccupantInfo
+	 * @purpose ensure the tile is updated to include the occupant handle
+	 * 
+	 * @param  {[type]} tileRef  [description]
+	 * @param  {[type]} pieceRef [description]
+	 */
+	updateTileOccupants( pieceRef, tileRef ){
+		// console.log('updateTileOccupants: ', tileRef, pieceRef );
+		let tileOptions = null;
+
+		// If the piece reference is specified the tile is occupied - populate the occupied state
+		if ( pieceRef ){
+			tileOptions = { occupied: true, occupant: pieceRef }
+		}
+		// Else tile is no longer occupied - clear it out
+		else {
+			tileOptions = { occupied: false, occupant: '' }
+		}
+
+		this.updateTileData( tileRef, tileOptions );
+	};
+
+	/**
+	 * @function updateTileData
+	 * @purpose update the tile data for a specific tile with new data passed in
+	 *
+	 * @param  {string} tileRef - The handle to the tile
+	 * @param  {object} options - An object containing the options that align with the tile data but contain new values
+	 */
+	updateTileData ( tileRef, options ){
+		let tileData = this.state.tileData;
+
+		// Loop through the tile data and update the tile options 
+		tileData.map((data) => {
+			let refName = data.col + data.row;
+
+			// If the tile matches the passed in reference
+			if( tileRef === refName ){
+				// Update the data with the passed in values
+				Object.assign( data, options );
+			}
+
+			return data;
+		});
 	};
 
 	/**
@@ -157,9 +217,15 @@ class Game extends React.Component {
 				data.col = destinationInfo.col;
 			}
 			pieceData[index] = data;
+
+			return null;
 		});
-		this.setState({'pieceData': pieceData}, ()=>{ console.log('pieceData: new: ', pieceData ); });
-		// pieceToMove.updatePosition( destinationTile.offsetLeft, destinationTile.offsetTop );
+
+		// Update the tile occupant state
+		this.updateTileOccupants( pieceRef, tileRef );
+
+		// Update the piece data
+		this.setState({'pieceData': pieceData});
 	};
 
 	/**
@@ -181,13 +247,66 @@ class Game extends React.Component {
 			piece.col = tilePositionInfo.col;
 
 			pieceData[index] = piece;
+
+			return null;
 		});
 		this.setState({pieceData: pieceData});
 	}
 
-	// handleClick = ( element ) => {
-	// 	console.log( 'tile clicked', element );
-	// };
+	/**
+	 * @function handleClick
+	 * @purpose handle the click event of a tile including moving etc.
+	 * TODO: Update this to handle messaging, setting active piece for spell casting etc.
+	 * 
+	 * @param  {object} element - a tile element
+	 */
+	handleClick = ( element ) => {
+		console.log( 'tile clicked', element );
+		let { sourceTile, sourcePiece, destinationTile } = this.state;
+
+		// If the source tile is set
+		if ( sourceTile ){
+			// Ensure that the destination tile is not the same as the source tile
+			if ( element.props.key !== sourceTile.props.key ){
+				destinationTile = element.props.key;
+
+				// Check if the destination tile is occupied
+				if( element.isOccupied() ){
+					// Handle occupied case
+				}
+				else {
+					// Disable the active state of the tile
+					this.updateTileData( sourceTile.props.key, {active: false });
+
+					// Move the piece and update the tiles state
+					this.movePiece( sourcePiece, destinationTile );
+					this.updateTileOccupants( null, sourceTile.props.key );
+
+					// End the player's turn by resetting the board state
+					this.setState({sourceTile: null, sourcePiece: null});
+				}
+			}
+			else {
+				// Destination tile is the same as the source tile, do nothing
+			}
+		}
+		else {
+			// If the selected tile has an occupant
+			if( element.isOccupied() ){
+				console.log( 'occupied: ' );
+				// And the occupant is the current player's piece
+				// Set the source tile
+				sourceTile = element;
+				sourcePiece = element.getOccupant();
+
+				// Toggle the Active state of the tile
+				this.updateTileData( sourceTile.props.key, {active: true });
+
+				// Update the State
+				this.setState({ sourceTile: sourceTile, sourcePiece: sourcePiece });
+			}
+		}
+	};
 
 	/**
 	 * @function renderWeb
@@ -206,6 +325,7 @@ class Game extends React.Component {
 		this.pieces = this.generatePieces();
 		const pieceNodes = this.pieces.map((piece) => { return piece.render() });
 
+		// Render the game
 		return (
 			<div className={'game'}>
 				<header className={'header'}>
@@ -213,6 +333,7 @@ class Game extends React.Component {
 				</header>
 
 				<main role={'main'}>
+					{this.state.alertGame && <div className="{'alert alert-game'}">{this.state.alertGame}</div>}
 					<div className={'container-board'} style={boardStyle}>
 						{/*<div className="container-graveyard container-graveyard-opponent"></div>*/}
 
@@ -225,11 +346,11 @@ class Game extends React.Component {
 							</div>
 						</div>
 
-						<button onClick={() => this.movePiece('lpawn1','c6')}>Move Light Pawn</button>
-						<button onClick={() => this.movePiece('dpawn2','c7')}>Move Dark Pawn</button>
-
 						{/*<div className="container-graveyard container-graveyard-player"></div>*/}
 					</div>
+
+					{/* Render the tile data */}
+					{/*<div><pre>{JSON.stringify(this.state.tileData, null, 2) }</pre></div>*/}
 				</main>
 			</div>
 		);

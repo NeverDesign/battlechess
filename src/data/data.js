@@ -73,7 +73,7 @@ const Tiles = [
 ];
 
 const Pieces = [
-	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'col': 'd', 'row': 2, 'x': 0, 'y': 0 },
+	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'col': 'a', 'row': 1, 'x': 0, 'y': 0 },
 	{ 'id': 2, 'type': 'pawn', 'team': 'd', 'col': 'd', 'row': 7, 'x': 0, 'y': 0 }
 ];
 

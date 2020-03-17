@@ -6,7 +6,7 @@ import './style.css';
  * @class Tile
  */
 class Tile extends React.Component {
-	constructor(props, data){
+	constructor(props, state, data){
 		super(props);
 
 		// Member Variables
@@ -14,9 +14,9 @@ class Tile extends React.Component {
 		// this.handleClick = this.handleClick.bind(this);
 
 		// State Variables
-		this.state = {
-			active: false,
-		};
+		if (state){
+			this.state = state;
+		}
 
 		// Reference
 		this.ref = React.createRef();
@@ -26,26 +26,49 @@ class Tile extends React.Component {
 	 * @function toggleActiveState
 	 * @purpose toggles whether this tile is active or not
 	 */
-	toggleActiveState = () => {
-		this.setState({ active: !this.state.active });
+	toggleActiveState = ( activeState ) => {
+		this.setState({ active: activeState });
 	};
 
-	// handleClick() {
-	// 	console.log('Tile: handleClick: ', this);
-	// 	return this;
-	// }
+	/**
+	 * @function onClick
+	 * @purpose function that handles the click event for a tile and the callback passed in from the parent
+	 */
+	onClick = () => {
+		const { handleclick } = this.props;
+
+		if ( handleclick ){
+			handleclick( this );
+		} 
+	};
+
+	/**
+	 * @function isOccupied
+	 * @purpose returns whether or not the tile is occupied
+	 * @return boolean
+	 */
+	isOccupied = () => {
+		return this.state.occupied;
+	};
+
+	/**
+	 * @function getOccupant
+	 * @purpose returns the reference to the piece that is occupying the tile
+	 * @return string
+	 */
+	getOccupant = () => {
+		return this.state.occupant;
+	};
 
 	/**
 	 * @function renderWeb
 	 * @purpose render a tile for a web implementation
-	 *
-	 * @return {*}
 	 */
 	renderWeb = ( classColour, classActive, style ) => {
-		const { label, key, col, row, children, onClick, ...rest } = this.props;
+		const { label, key, col, row, children, handleclick, ...rest } = this.props;
 
 		return (
-			<div id={label} key={key} ref={this.ref} row={row} col={col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.handleClick} {...rest}>
+			<div id={label} key={key} ref={this.ref} row={row} col={col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.onClick} {...rest}>
 				<div className="inner">
 					<span>{label}</span>
 					{children}

@@ -3,23 +3,31 @@ import React from 'react'
 import './style.css';
 
 class Piece extends React.Component {
-	constructor(props, data){
+	constructor(props, state, data){
 		super(props);
 
 		// Member Variables
-		this.isDark = data.isDark;
 		this.type = data.type;
+		this.team = data.team
 
 		// State Variables
-		this.state = {
-			x: props.x,
-			y: props.y,
-			row: props.row,
-			col: props.col,
-		};
+		if( state ){
+			this.state = state;
+		}
 
 		// Reference
 		this.ref = React.createRef();
+
+		// Piece Team
+		switch (data.team){
+			case 'd':
+				this.isDark = true;
+				break;
+			case 'l':
+			default:
+				this.isDark = false;
+				break;
+		}
 	}
 
 	/**
@@ -30,6 +38,15 @@ class Piece extends React.Component {
 
 	};
 
+	/**
+	 * @function updatePosition
+	 * @purpose updates the position of the piece by setting the x, y, row and col
+	 * 
+	 * @param  {number} x   The X co-ordinate to move the piece to
+	 * @param  {number} y   The Y co-ordinate to move the piece to
+	 * @param  {string} row Row identifier
+	 * @param  {string} col Col identifier
+	 */
 	updatePosition = ( x, y, row, col ) => {
 		this.setState({
 			col: col,
@@ -55,10 +72,13 @@ class Piece extends React.Component {
 			left: this.state.x + 'px'
 		};
 
+		// TODO: Remove this once piece types start inheriting the base piece
+		const pieceText = this.isDark ? '\u265F' : '\u2659';
+
 		return (
 			<div id={label} key={key} ref={this.ref} className={'piece ' + classType + classColour + classActive} style={style} {...rest} >
 				<div className="inner">
-					<span>&#9817;</span>
+					<span>{ pieceText }</span>
 				</div>
 			</div>
 		);

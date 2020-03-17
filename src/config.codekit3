@@ -9,6 +9,48 @@
 	],
 "creatorBuild": "31934",
 "files": {
+	"/components/alert/Alert.js": {
+		"bF": 0,
+		"ft": 64,
+		"ma": 0,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "/components/alert/Alert-min.js",
+		"oF": 0,
+		"sC": 3,
+		"tS": 0
+		},
+	"/components/alert/style.css": {
+		"aP": 1,
+		"bl": 0,
+		"ft": 16,
+		"ma": 0,
+		"oA": 0,
+		"oAP": "/components/alert/style-min.css",
+		"oF": 0,
+		"oS": 3
+		},
+	"/components/alert/style.css.map": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/components/alert/style.css.map",
+		"oF": 0
+		},
+	"/components/alert/style.scss": {
+		"aP": 0,
+		"bl": 0,
+		"dP": 10,
+		"dS": 0,
+		"ft": 4,
+		"ma": 1,
+		"oA": 0,
+		"oAP": "/components/alert/style.css",
+		"oF": 0,
+		"oS": 0,
+		"uL": 1
+		},
 	"/components/piece/Piece.js": {
 		"bF": 0,
 		"ft": 64,
