@@ -3,6 +3,7 @@ import React from 'react';
 import './Game.css';
 import Tile from "./components/tile/Tile";
 import Piece from "./components/piece/Piece";
+import Alert from "./components/alert/Alert";
 
 // Data
 import GameData from "./data/data";
@@ -29,6 +30,10 @@ class Game extends React.Component {
 		this.pieces = [];
 		this.pieceContainer = React.createRef();
 
+		// Player Variables
+		this.lightTeam = 'l';
+		this.darkTeam = 'd';
+
 		// State Variables
 		this.state = {
 			alertGame: null,
@@ -39,6 +44,7 @@ class Game extends React.Component {
 			sourceTile: null,
 			sourcePiece: null,
 			destinationTile: null,
+			playerTurn: this.lightTeam
 		};
 	}
 
@@ -229,6 +235,117 @@ class Game extends React.Component {
 	};
 
 	/**
+	 * @function getPieceData
+	 * @purpose find and return the underlying data for a specific piece
+	 *
+	 * @param pieceRef
+	 * @returns {{}} or null
+	 */
+	getPieceData = ( pieceRef ) => {
+		let piece = null;
+
+		// Loop through the piece data and find the piece to move by reference and update the x,y data and tile handle
+		let pieceData = this.state.pieceData;
+		pieceData.find(( data, index ) => {
+			let refName = data.team + data.type + data.id;
+			if( pieceRef === refName ){
+				piece = data;
+			}
+		});
+
+		return piece;
+	};
+
+	/**
+	 * @function handleClick
+	 * @purpose handle the click event of a tile including moving etc.
+	 * TODO: Update this to handle messaging, setting active piece for spell casting etc.
+	 * 
+	 * @param  {object} element - a tile element
+	 */
+	handleClick = ( element ) => {
+		let { sourceTile, sourcePiece, destinationTile } = this.state;
+
+		// Ensure there are no alerts being displayed
+		this.setState({ alertGame: null });
+
+		// If the source tile is set
+		if ( sourceTile ){
+			// Ensure that the destination tile is not the same as the source tile
+			if ( element.props.key !== sourceTile.props.key ){
+				destinationTile = element.props.key;
+
+				// Check if the destination tile is occupied
+				if( element.isOccupied() ){
+					// Handle occupied case
+					this.setState({ alertGame: 'Choose an empty tile' });
+				}
+				else {
+					// Disable the active state of the tile
+					this.updateTileData( sourceTile.props.key, {active: false });
+
+					// Move the piece and update the tiles state
+					this.movePiece( sourcePiece, destinationTile );
+					this.updateTileOccupants( null, sourceTile.props.key );
+
+					// End the player's turn and reset the board state
+					this.setState({sourceTile: null, sourcePiece: null},
+						this.endTurn);
+				}
+			}
+			else {
+				// Destination tile is the same as the source tile, do nothing
+			}
+		}
+		else {
+			// If the selected tile has an occupant
+			if( element.isOccupied() ){
+				// And the occupant is the current player's piece
+				// Set the source tile
+				let sourceTile = element;
+				let sourcePiece = element.getOccupant();
+				let sourcePieceData = this.getPieceData(sourcePiece);
+
+				console.log( 'sourcePieceData: ', sourcePieceData );
+
+				// Determine whether or not the source piece is friendly
+				if ( sourcePieceData.team === this.state.playerTurn ){
+					// Toggle the Active state of the tile
+					this.updateTileData( sourceTile.props.key, {active: true });
+
+					// Update the State
+					this.setState({ sourceTile: sourceTile, sourcePiece: sourcePiece });
+				}
+				else {
+					// Piece is not yours - Do nothing
+					this.setState({ alertGame: 'Choose a piece from your team' });
+				}
+			}
+			else {
+				this.setState({ alertGame: 'Choose a piece' });
+			}
+		}
+	};
+
+	/**
+	 * @function endTurn
+	 * @purpose ends the current player's turn and switches it to the opposite team
+	 */
+	endTurn = () => {
+		const currentTeam = this.state.playerTurn;
+		let nextTeam = null;
+
+		if ( currentTeam === this.lightTeam ){
+			nextTeam = this.darkTeam;
+		}
+		else {
+			nextTeam = this.lightTeam;
+		}
+
+		this.setState({ playerTurn: nextTeam });
+	};
+
+	/**
 	 * @function componentDidMount
 	 * @purpose run when the component is mounted and ready for use, after initial render
 	 */
@@ -254,61 +371,6 @@ class Game extends React.Component {
 	}
 
 	/**
-	 * @function handleClick
-	 * @purpose handle the click event of a tile including moving etc.
-	 * TODO: Update this to handle messaging, setting active piece for spell casting etc.
-	 * 
-	 * @param  {object} element - a tile element
-	 */
-	handleClick = ( element ) => {
-		console.log( 'tile clicked', element );
-		let { sourceTile, sourcePiece, destinationTile } = this.state;
-
-		// If the source tile is set
-		if ( sourceTile ){
-			// Ensure that the destination tile is not the same as the source tile
-			if ( element.props.key !== sourceTile.props.key ){
-				destinationTile = element.props.key;
-
-				// Check if the destination tile is occupied
-				if( element.isOccupied() ){
-					// Handle occupied case
-				}
-				else {
-					// Disable the active state of the tile
-					this.updateTileData( sourceTile.props.key, {active: false });
-
-					// Move the piece and update the tiles state
-					this.movePiece( sourcePiece, destinationTile );
-					this.updateTileOccupants( null, sourceTile.props.key );
-
-					// End the player's turn by resetting the board state
-					this.setState({sourceTile: null, sourcePiece: null});
-				}
-			}
-			else {
-				// Destination tile is the same as the source tile, do nothing
-			}
-		}
-		else {
-			// If the selected tile has an occupant
-			if( element.isOccupied() ){
-				console.log( 'occupied: ' );
-				// And the occupant is the current player's piece
-				// Set the source tile
-				sourceTile = element;
-				sourcePiece = element.getOccupant();
-
-				// Toggle the Active state of the tile
-				this.updateTileData( sourceTile.props.key, {active: true });
-
-				// Update the State
-				this.setState({ sourceTile: sourceTile, sourcePiece: sourcePiece });
-			}
-		}
-	};
-
-	/**
 	 * @function renderWeb
 	 * @purpose render the game board for web
 	 */
@@ -332,8 +394,7 @@ class Game extends React.Component {
 					<h1>Battle Chess</h1>
 				</header>
 
-				<main role={'main'}>
-					{this.state.alertGame && <div className="{'alert alert-game'}">{this.state.alertGame}</div>}
+				<main role={'main'} style={{width: this.state.boardSize + 50 + 'px'}}>
 					<div className={'container-board'} style={boardStyle}>
 						{/*<div className="container-graveyard container-graveyard-opponent"></div>*/}
 
@@ -348,6 +409,11 @@ class Game extends React.Component {
 
 						{/*<div className="container-graveyard container-graveyard-player"></div>*/}
 					</div>
+					{/* Turn Info*/}
+					{<div>Turn: {this.state.playerTurn === this.lightTeam ? 'Light' : 'Dark'} team</div>}
+
+					{/* Game related Errors */}
+					{this.state.alertGame && <div className={'alert alert-game'}>{this.state.alertGame}</div>}
 
 					{/* Render the tile data */}
 					{/*<div><pre>{JSON.stringify(this.state.tileData, null, 2) }</pre></div>*/}

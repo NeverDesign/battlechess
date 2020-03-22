@@ -73,8 +73,19 @@ const Tiles = [
 ];
 
 const Pieces = [
-	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'col': 'a', 'row': 1, 'x': 0, 'y': 0 },
-	{ 'id': 2, 'type': 'pawn', 'team': 'd', 'col': 'd', 'row': 7, 'x': 0, 'y': 0 }
+	{ 'id': 1, 'type': 'pawn', 'team': 'l', 'col': 'c', 'row': 1, 'x': 0, 'y': 0 },
+	{ 'id': 2, 'type': 'pawn', 'team': 'l', 'col': 'd', 'row': 1, 'x': 0, 'y': 0 },
+	{ 'id': 3, 'type': 'pawn', 'team': 'l', 'col': 'e', 'row': 1, 'x': 0, 'y': 0 },
+	{ 'id': 4, 'type': 'pawn', 'team': 'l', 'col': 'f', 'row': 1, 'x': 0, 'y': 0 },
+	{ 'id': 5, 'type': 'pawn', 'team': 'd', 'col': 'c', 'row': 8, 'x': 0, 'y': 0 },
+	{ 'id': 6, 'type': 'pawn', 'team': 'd', 'col': 'd', 'row': 8, 'x': 0, 'y': 0 },
+	{ 'id': 8, 'type': 'pawn', 'team': 'd', 'col': 'e', 'row': 8, 'x': 0, 'y': 0 },
+	{ 'id': 9, 'type': 'pawn', 'team': 'd', 'col': 'f', 'row': 8, 'x': 0, 'y': 0 }
+];
+
+const Players = [
+	{ 'id': 1, 'userName': 'Player1' },
+	{ 'id': 2, 'userName': 'Player2' }
 ];
 
 const GameData = {

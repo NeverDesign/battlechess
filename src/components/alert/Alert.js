@@ -3,7 +3,7 @@ import React from 'react'
 import './style.css';
 
 class Alert extends React.Component {
-	constructor(props, state, data){
+	constructor(props){
 		super(props);
 
 		// Reference
@@ -43,8 +43,8 @@ class Alert extends React.Component {
 	 * TODO: Switch out the render method per platform
 	 */
 	render() {
-		return this.renderWeb( classType, classColour, classActive, size );
+		return this.renderWeb();
 	}
 }
 
-export default Piece;
+export default Alert;

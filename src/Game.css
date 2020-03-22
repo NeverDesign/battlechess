@@ -1,22 +1,24 @@
-.container-board {
-	padding: 10px;
-	background: #efefef;
+header {
+	text-align: center;
 }
 
-.container-graveyard {
-
-}
-
-.board {
-	background: #6BBF5E;
-	position: relative;
+main {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin: 10px auto;
 }
 
 .container {
 	display: flex;
-		flex-wrap: wrap;
+	flex-wrap: wrap;
 	width: 100%;
 	position: relative;
+}
+
+.container-board {
+	padding: 10px;
+	background: #efefef;
 }
 
 .player-1 .container {
@@ -25,6 +27,15 @@
 
 .player-2 .container {
 	flex-wrap: wrap;
+}
+
+.board {
+	background: #6BBF5E;
+	position: relative;
+}
+
+.container-graveyard {
+
 }
 
 .container-pieces {
@@ -38,6 +49,12 @@
 	pointer-events: none; 
 }
 
-main {
-	display: flex;
+/* Alerts */
+.alert {
+	flex: 1 1 100%;
+	margin: 12px 0px;
+	border-radius: 5px;
+	background: rgba(0,0,0,0.5);
+	color: white;
+	padding: 5px 12px;
 }
