@@ -76,7 +76,7 @@ class Piece extends React.Component {
 		const pieceText = this.isDark ? '\u265F' : '\u2659';
 
 		return (
-			<div id={label} key={key} ref={this.ref} className={'piece ' + classType + classColour + classActive} style={style} {...rest} >
+			<div id={label} key={key} className={'piece ' + classType + classColour + classActive} style={style} {...rest} >
 				<div className="inner">
 					<span>{ pieceText }</span>
 				</div>

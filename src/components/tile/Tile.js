@@ -68,7 +68,7 @@ class Tile extends React.Component {
 		const { label, key, col, row, children, handleclick, ...rest } = this.props;
 
 		return (
-			<div id={label} key={key} ref={this.ref} row={row} col={col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.onClick} {...rest}>
+			<div id={label} key={key} row={row} col={col} className={'tile ' + classColour + classActive} style={style.tileSize} onClick={this.onClick} {...rest}>
 				<div className="inner">
 					<span>{label}</span>
 					{children}
@@ -86,6 +86,7 @@ class Tile extends React.Component {
 	render() {
 		const classColour = this.isDark ? 'dark ' : 'light ';
 		const classActive = this.state.active ? 'active ' : '';
+		const hoverClass = '';
 
 		const size = this.props.size;
 		const style = {

@@ -1,12 +1,11 @@
 // Imports
 import React from 'react';
-import './Game.css';
-import Tile from "./components/tile/Tile";
-import Piece from "./components/piece/Piece";
-import Alert from "./components/alert/Alert";
+import './style.css';
+import Tile from "../../components/tile/Tile";
+import Piece from "../../components/piece/Piece";
 
 // Data
-import GameData from "./data/data";
+import GameData from "../../data/data";
 
 /**
  * @class Game
@@ -33,6 +32,8 @@ class Game extends React.Component {
 		// Player Variables
 		this.lightTeam = 'l';
 		this.darkTeam = 'd';
+		this.player = GameData.players[0];
+		this.opponent = GameData.players[1];
 
 		// State Variables
 		this.state = {
@@ -55,7 +56,7 @@ class Game extends React.Component {
 	 * @return {*}
 	 */
 	generateTiles = () => {
-		console.log('generateTiles: ');
+		console.log('Game: generateTiles: ');
 		let tiles = [];
 
 		// 1. Generate an array of tile classes based on the retrieved tile data
@@ -64,7 +65,6 @@ class Game extends React.Component {
 			let props = {
 				'key': refName,
 				'label': refName,
-				'ref': refName,
 				'size': this.state.gridSize,
 				'handleclick': this.handleClick
 			};
@@ -72,7 +72,7 @@ class Game extends React.Component {
 				'active': tileData.active,
 				'occupied': tileData.occupied,
 				'occupant': tileData.occupant
-			}
+			};
 			return new Tile( props, state, tileData );
 		});
 
@@ -89,7 +89,7 @@ class Game extends React.Component {
 	 * TODO: Update this to generate pieceClasses for each player
 	 */
 	generatePieces = () => {
-		console.log('generatePieces: ');
+		console.log('Game: generatePieces: ');
 		let pieces = [];
 
 		// 1. Generate an array of piece classes based on the retrieved piece data
@@ -98,7 +98,6 @@ class Game extends React.Component {
 			let refName = pieceData.team + pieceData.type + pieceData.id;
 			let props = {
 				'key': key,
-				'ref': refName,
 				'label': refName,
 				'team': pieceData.team,
 				'size': this.state.gridSize,
@@ -108,7 +107,7 @@ class Game extends React.Component {
 				'row': pieceData.row,
 				'x': pieceData.x,
 				'y': pieceData.y,
-			}
+			};
 
 			// 2. Update the tile data occupied and occupant information
 			this.updateTileOccupants( refName, pieceData.col + pieceData.row );
@@ -188,8 +187,8 @@ class Game extends React.Component {
 				// Get the position and row/col data
 				x = destinationTileNode.offsetLeft;
 				y = destinationTileNode.offsetTop;
-				col = tileClasses[i].props.ref[0];
-				row = parseInt(tileClasses[i].props.ref[1]);
+				col = tileClasses[i].props.key[0];
+				row = parseInt(tileClasses[i].props.key[1]);
 			}
 		}
 
@@ -294,7 +293,11 @@ class Game extends React.Component {
 				}
 			}
 			else {
-				// Destination tile is the same as the source tile, do nothing
+				// Disable the active state of the tile
+				this.updateTileData( sourceTile.props.key, {active: false });
+
+				// Destination tile is the same as the source tile, select nothing
+				this.setState({sourceTile: null});
 			}
 		}
 		else {
@@ -305,8 +308,6 @@ class Game extends React.Component {
 				let sourceTile = element;
 				let sourcePiece = element.getOccupant();
 				let sourcePieceData = this.getPieceData(sourcePiece);
-
-				console.log( 'sourcePieceData: ', sourcePieceData );
 
 				// Determine whether or not the source piece is friendly
 				if ( sourcePieceData.team === this.state.playerTurn ){
@@ -389,12 +390,14 @@ class Game extends React.Component {
 
 		// Render the game
 		return (
-			<div className={'game'}>
-				<header className={'header'}>
-					<h1>Battle Chess</h1>
-				</header>
+			<>
+			<header className={'header'}>
+				<h1>Battle Chess</h1>
+			</header>
 
+			<div className={'game'}>
 				<main role={'main'} style={{width: this.state.boardSize + 50 + 'px'}}>
+
 					<div className={'container-board'} style={boardStyle}>
 						{/*<div className="container-graveyard container-graveyard-opponent"></div>*/}
 
@@ -419,6 +422,7 @@ class Game extends React.Component {
 					{/*<div><pre>{JSON.stringify(this.state.tileData, null, 2) }</pre></div>*/}
 				</main>
 			</div>
+			</>
 		);
 	};
 

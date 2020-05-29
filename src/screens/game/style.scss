@@ -1,3 +1,6 @@
+// Imports
+@import '../../theme/colours';
+
 header {
 	text-align: center;
 }
@@ -18,7 +21,7 @@ main {
 
 .container-board {
 	padding: 10px;
-	background: #efefef;
+	background: $boardBg;
 }
 
 .player-1 .container {
@@ -30,7 +33,7 @@ main {
 }
 
 .board {
-	background: #6BBF5E;
+	background: $boardBg;
 	position: relative;
 }
 
@@ -40,13 +43,13 @@ main {
 
 .container-pieces {
 	position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 
 	/* Allow pointer events to pass through to the tile */
-	pointer-events: none; 
+	pointer-events: none;
 }
 
 /* Alerts */
@@ -54,7 +57,7 @@ main {
 	flex: 1 1 100%;
 	margin: 12px 0px;
 	border-radius: 5px;
-	background: rgba(0,0,0,0.5);
-	color: white;
+	background: transparentize($black,0.5);
+	color: $white;
 	padding: 5px 12px;
 }
